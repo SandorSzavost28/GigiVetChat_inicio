@@ -94,10 +94,11 @@ class __FormState extends State<_Form> {
           //TODO crear boton
           BlueButton(
             //argumentos del boton azul
-            text: 'Login',
+            text: 'Register',
             onPressed: (){
-              print( emailCtrl.text);
-              print( passCtrl.text);
+              print( nameCtrl.text );
+              print( emailCtrl.text );
+              print( passCtrl.text );
             },
 
           )
