@@ -1,5 +1,7 @@
+import 'package:chat_flutter01/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_flutter01/models/usuario.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 
@@ -17,21 +19,27 @@ class _UsuariosPageState extends State<UsuariosPage> {
 
   
   final usuarios = [
-    Usuario(true, 'mariatest1@hola.com', 'Maria', '1'),
-    Usuario(true, 'josetest@hola.com','José','2'),
-    Usuario(false, 'davidtest@hola.com','David', '3'),
-    Usuario(true, 'fernandotest@hola.com','Fernando','4')
+    
+    Usuario(online: true, email: 'mariatest1@hola.com', nombre: 'Maria', uid: '1'),
+    Usuario(online: true, email: 'josetest@hola.com',nombre: 'José',uid: '2'),
+    Usuario(online: false, email: 'davidtest@hola.com',nombre: 'David', uid: '3'),
+    Usuario(online: true, email: 'fernandotest@hola.com',nombre: 'Fernando',uid: '4')
+    
     
   ];
 
 
   @override
   Widget build(BuildContext context) {
+
+    final authService = Provider.of<AuthService>(context);
+    final usuario = authService.usuario;
+
     return Scaffold(
       appBar: AppBar(
         
         title: Text(
-          'Mi nombre', 
+          usuario.nombre, 
           style: TextStyle( color: Colors.black54 ),
           // textAlign: TextAlign.center,
         ),
@@ -39,7 +47,15 @@ class _UsuariosPageState extends State<UsuariosPage> {
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: (){
+            
+            //LOGOUT
+            //TODO: desconectar del socket server
 
+            //sacar de la opantalla
+            Navigator.pushReplacementNamed(context, 'login');
+
+            //llamar al logout sin instanciar
+            AuthService.deleteToken();
           }, 
           icon: Icon(Icons.exit_to_app, color: Colors.black54,)
         ),

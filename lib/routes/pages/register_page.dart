@@ -1,8 +1,12 @@
-import 'package:chat_flutter01/widgets/blue_button_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:chat_flutter01/services/auth_service.dart';
+import 'package:chat_flutter01/widgets/blue_button_widget.dart';  
 import 'package:chat_flutter01/widgets/labels_widget.dart';
 import 'package:chat_flutter01/widgets/logo_widget.dart';
-import 'package:flutter/material.dart';
 import 'package:chat_flutter01/widgets/custon_input.dart';
+import 'package:chat_flutter01/helpers/mostrar_alerta.dart';
 
 
 class RegisterPage extends StatelessWidget {
@@ -63,6 +67,9 @@ class __FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+
+    final authService = Provider.of<AuthService>(context);
+
     return Container(
       margin: const EdgeInsets.only(top: 15),
       padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -70,7 +77,6 @@ class __FormState extends State<_Form> {
         children: <Widget> [
           
           // TextField(),
-          
           CustomInput(
             icon: Icons.perm_identity,
             placeholder: 'Nombre',
@@ -94,13 +100,45 @@ class __FormState extends State<_Form> {
           //TODO crear boton
           BlueButton(
             //argumentos del boton azul
-            text: 'Register',
-            onPressed: (){
-              print( nameCtrl.text );
-              print( emailCtrl.text );
-              print( passCtrl.text );
-            },
+            text: 'Registrar',
+            onPressed: authService.isLoging 
+            ? null //si esta en TRUE esta autenticando y deshabilitara el boton
+            : () async { //Si esta en FALSE estará habilitado
 
+              //para deshabilitar el teclado al autenticar
+              FocusScope.of(context).unfocus(); //quita el foco de donde sea que esté y oculta el teclado
+
+              // print( emailCtrl.text);
+              // print( passCtrl.text);
+              
+              //codigo movido arriba para elevarlo y hacerlo disponible mas arriba
+              //Usaremos provider para llamar al AuthService.login
+              // final authService = Provider.of<AuthService>(context,listen: false); //instancia del AuthService
+              
+              //asginammis al loginOK despues de agregar el bool y el async
+              final registerOk = await authService.register( nameCtrl.text.trim() , emailCtrl.text.trim(), passCtrl.text.trim()); //trim para recortar los espacios al final
+
+              if ( registerOk == true ) {
+                //cambiar de pantalla a logueado 
+                //pushReplacementNamed porque no uqiero que regresen a la pantalla de login
+
+                Navigator.pushReplacementNamed(context, 'usuarios'); 
+
+                // Conectar a sockets server
+            
+              } else {
+                //mmostrar alerta
+                //vamos a extraer la logica de la alerta 
+                mostrarAlerta(
+                  context, 
+                  'Registro incorrecto', //titulo
+                  registerOk //subtitulo
+                );
+
+              }
+
+            },
+                        
           )
 
 
