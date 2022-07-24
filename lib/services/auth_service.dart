@@ -74,7 +74,7 @@ class AuthService with ChangeNotifier{
     );
   
     //imprime la respuesta, de la peticion login
-     print ( resp.body);
+     //print ( resp.body);
 
     this.isLoging = false;    
 
@@ -163,9 +163,31 @@ class AuthService with ChangeNotifier{
   //validacion de token 
   Future<bool> isLogggedIn() async{
 
+    //*
+    // late dynamic resp;
+
     //leo el tocken almacenado en el secure storage
     final token = await this._storage.read(key: 'token');
 
+    // //validacion David
+    // if (token == null){
+    //   final url = Uri.parse('${ Environment.apiUrl }/login/renew');
+    //   resp = await http.get(url);      
+    // } else {
+    //   final url = Uri.parse('${ Environment.apiUrl }/login/renew');
+    //   resp = await http.get(
+    //     url,
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'x-token': token
+    //   }
+        
+    //   );
+    // }
+  
+    
+    
+    
     //validacion David
     if (token == null){
       return false;

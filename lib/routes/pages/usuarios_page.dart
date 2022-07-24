@@ -1,8 +1,13 @@
-import 'package:chat_flutter01/services/auth_service.dart';
+import 'package:chat_flutter01/services/chat_service.dart';
+import 'package:chat_flutter01/services/usuarios_service.dart';
 import 'package:flutter/material.dart';
-import 'package:chat_flutter01/models/usuario.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import 'package:chat_flutter01/services/socket_service.dart';
+import 'package:chat_flutter01/services/auth_service.dart';
+
+import 'package:chat_flutter01/models/usuario.dart';
 
 
 class UsuariosPage extends StatefulWidget {
@@ -15,24 +20,33 @@ class UsuariosPage extends StatefulWidget {
 
 class _UsuariosPageState extends State<UsuariosPage> {
 
+  final usuarioService = new UsuariosService();
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
+  //creamos lista de usuarios
+  List<Usuario> usuarios = [];
+
   
-  final usuarios = [
-    
-    Usuario(online: true, email: 'mariatest1@hola.com', nombre: 'Maria', uid: '1'),
-    Usuario(online: true, email: 'josetest@hola.com',nombre: 'José',uid: '2'),
-    Usuario(online: false, email: 'davidtest@hola.com',nombre: 'David', uid: '3'),
-    Usuario(online: true, email: 'fernandotest@hola.com',nombre: 'Fernando',uid: '4')
-    
-    
-  ];
+  // final usuarios = [
+  //   Usuario(online: true, email: 'mariatest1@hola.com', nombre: 'Maria', uid: '1'),
+  //   Usuario(online: true, email: 'josetest@hola.com',nombre: 'José',uid: '2'),
+  //   Usuario(online: false, email: 'davidtest@hola.com',nombre: 'David', uid: '3'),
+  //   Usuario(online: true, email: 'fernandotest@hola.com',nombre: 'Fernando',uid: '4')  
+  // ];
+
+  //creamos el init para incluir el cargarusuarios al inicio
+  @override
+  void initState() {
+    _cargarUsuarios();
+    super.initState();
+  }
 
 
   @override
   Widget build(BuildContext context) {
 
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
     final usuario = authService.usuario;
 
     return Scaffold(
@@ -50,6 +64,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
             
             //LOGOUT
             //TODO: desconectar del socket server
+            socketService.disconnect();
 
             //sacar de la opantalla
             Navigator.pushReplacementNamed(context, 'login');
@@ -61,9 +76,12 @@ class _UsuariosPageState extends State<UsuariosPage> {
         ),
         actions: <Widget>[
           Container(
+                       
             margin: EdgeInsets.only(right: 10 ),
-            child: Icon( Icons.check_circle, color: Colors.blue[400],),
-            // child: Icon( Icons.offline_bolt, color: Colors.red,),
+            
+            child: (socketService.serverStatus == ServerStatus.Online )  
+            ? Icon( Icons.check_circle, color: Colors.blue[400], ) //Online
+            : Icon( Icons.offline_bolt, color: Colors.red,), //Offline
 
           )
         ],
@@ -113,14 +131,31 @@ class _UsuariosPageState extends State<UsuariosPage> {
             borderRadius: BorderRadius.circular(100)
           ),
         ),
+        onTap: () {
+          final chatService = Provider.of<ChatService>(context, listen: false);
+          chatService.usuarioPara = usuario;
+          Navigator.pushNamed(context, 'chat');
+        },
       );
   }
 
   _cargarUsuarios() async {
+
+    //crear instancia de Usuario
+    
+
+    //peticion y asignacion a propiedad de la clase
+    this.usuarios = await usuarioService.getUsuarios();
+
+    setState(() {
+      
+    });
+
+
     //cargarar la ifnromacion del endpoint
     
     // monitor network fetch
-    await Future.delayed(Duration(milliseconds: 1000));
+    //await Future.delayed(Duration(milliseconds: 1000));
     // if failed,use refreshFailed()
     _refreshController.refreshCompleted();
   

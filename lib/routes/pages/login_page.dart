@@ -1,3 +1,4 @@
+import 'package:chat_flutter01/services/socket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -68,6 +69,7 @@ class __FormState extends State<_Form> {
 
     //codido elevado aca,, listen en true, para redibujar si se dispara el notifylisteners
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
 
     return Container(
       margin: const EdgeInsets.only(top: 15),
@@ -113,6 +115,8 @@ class __FormState extends State<_Form> {
               final loginOk = await authService.login(emailCtrl.text.trim(), passCtrl.text.trim()); //trim para recortar los espacios al final
 
               if ( loginOk ) {
+                //conexión con socket                
+                socketService.connect();
                 //cambiar de pantalla a logueado 
                 //pushReplacementNamed porque no uqiero que regresen a la pantalla de login
                 Navigator.pushReplacementNamed(context, 'usuarios'); 

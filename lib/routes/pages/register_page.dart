@@ -8,6 +8,8 @@ import 'package:chat_flutter01/widgets/logo_widget.dart';
 import 'package:chat_flutter01/widgets/custon_input.dart';
 import 'package:chat_flutter01/helpers/mostrar_alerta.dart';
 
+import '../../services/socket_service.dart';
+
 
 class RegisterPage extends StatelessWidget {
 
@@ -69,6 +71,7 @@ class __FormState extends State<_Form> {
   Widget build(BuildContext context) {
 
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
 
     return Container(
       margin: const EdgeInsets.only(top: 15),
@@ -119,12 +122,14 @@ class __FormState extends State<_Form> {
               final registerOk = await authService.register( nameCtrl.text.trim() , emailCtrl.text.trim(), passCtrl.text.trim()); //trim para recortar los espacios al final
 
               if ( registerOk == true ) {
-                //cambiar de pantalla a logueado 
-                //pushReplacementNamed porque no uqiero que regresen a la pantalla de login
-
-                Navigator.pushReplacementNamed(context, 'usuarios'); 
 
                 // Conectar a sockets server
+                socketService.connect();
+
+                //cambiar de pantalla a logueado 
+                //pushReplacementNamed porque no uqiero que regresen a la pantalla de login
+                Navigator.pushReplacementNamed(context, 'usuarios'); 
+
             
               } else {
                 //mmostrar alerta

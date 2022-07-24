@@ -1,9 +1,11 @@
-import 'package:chat_flutter01/routes/pages/login_page.dart';
-import 'package:chat_flutter01/routes/pages/usuarios_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:chat_flutter01/services/auth_service.dart';
+import 'package:chat_flutter01/services/socket_service.dart';
+
+import 'package:chat_flutter01/routes/pages/login_page.dart';
+import 'package:chat_flutter01/routes/pages/usuarios_page.dart';
 
 class LoadingPage extends StatelessWidget {
 
@@ -30,6 +32,7 @@ class LoadingPage extends StatelessWidget {
 
     //instanciamos authService
     final authService = Provider.of<AuthService>(context,listen: false);
+    final socketService = Provider.of<SocketService>(context,listen: false);  
 
     //dependiendo de autenticado llamaremos a las pantallas   
     final autenticado = await authService.isLogggedIn();
@@ -37,7 +40,8 @@ class LoadingPage extends StatelessWidget {
     //llamar pantallas
     if (autenticado){
 
-      //TODO: Conectar al socket service 3
+      //Conectar al socket service 3
+      socketService.connect();
 
       // Navigator.pushReplacementNamed(context, 'usuarios');
       Navigator.pushReplacement(
